@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rx-imp-dclick", "Rx-imp-dcl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rx-decl-dclick", "Rx-decl-dclick\Rx-decl-dclick.csproj", "{7073CBC7-D43D-4DD6-B9F2-F6FEBFDECE0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservablesExamples", "ObservablesExamples\ObservablesExamples.csproj", "{3F77B4B7-DEA3-448E-8088-C764411054B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObservablesExamples", "ObservablesExamples\ObservablesExamples.csproj", "{3F77B4B7-DEA3-448E-8088-C764411054B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirstLook", "FirstLook\FirstLook.csproj", "{639EB67E-0AAD-449A-B8BE-0E6E4B105913}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FirstLook", "FirstLook\FirstLook.csproj", "{639EB67E-0AAD-449A-B8BE-0E6E4B105913}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpClientObservableExample", "HttpClientObservableExample\HttpClientObservableExample.csproj", "{E405003C-3D7F-45D7-86D0-82732CC8A9C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{639EB67E-0AAD-449A-B8BE-0E6E4B105913}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{639EB67E-0AAD-449A-B8BE-0E6E4B105913}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{639EB67E-0AAD-449A-B8BE-0E6E4B105913}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E405003C-3D7F-45D7-86D0-82732CC8A9C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E405003C-3D7F-45D7-86D0-82732CC8A9C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E405003C-3D7F-45D7-86D0-82732CC8A9C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E405003C-3D7F-45D7-86D0-82732CC8A9C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
