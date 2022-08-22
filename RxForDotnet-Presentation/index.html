@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/black.css" id="theme" />
+    <link rel="stylesheet" href="plugin/highlight/zenburn.css" />
+	<link rel="stylesheet" href="css/layout.css" />
+	<link rel="stylesheet" href="plugin/customcontrols/style.css">
+	<link rel="stylesheet" href="plugin/chalkboard/style.css">
+
+
+    <script defer src="dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"># Einstieg in Rx.NET
+
+Reaktive Programmierung mit .NET
+</script></section><section  data-markdown><script type="text/template">
+## Starke Inspiration dieser Präsentation
+
+[Gregor Biswanger - Einstieg in Rx.NET - Die reaktive Programmierung mit .NET - YouTube](https://www.youtube.com/watch?v=0Y673IoWqUg)
+</script></section><section  data-markdown><script type="text/template">
+## Table of Content
+1. Überblick
+	1. Asynchrone Programmierung ist schwierig
+1. Rx Anatomie
+1. Programmierung mit Rx.NET
+1. Marble-Diagram
+1. Operators
+1. Hot or Cold
+1. Subjects
+
+</script></section><section  data-markdown><script type="text/template">
+## Überblick
+</script></section><section  data-markdown><script type="text/template">
+### Asynchrone Programmierung ist schwierig
+</script></section><section  data-markdown><script type="text/template">
+"**R**eactive E**x**tensions ist eine Bibliothek um asynchrone und event-basierte Anwendungen mit Hilfe von Observables und LINQ-Style Operators"
+
+Source: https://github.com/dotnet/reactive
+</script></section><section  data-markdown><script type="text/template">
+### Übersetzung
+
+"Reactive Extensions ist eine Bibliothek mit der man auf Änderungen in Datenströmen reagieren kann."
+</script></section><section  data-markdown><script type="text/template">
+"Die Reactive Extensions erleichtern uns die asynchrone Programmierung beim arbeiten mit Datenströmen."
+</script></section><section  data-markdown><script type="text/template">
+### Interaktive Programmierung
+
+Nach jeder Aktion wird geprüft ob sich die Daten geändert haben oder neue vorhanden sind.
+</script></section><section  data-markdown><script type="text/template">
+### Reaktive Programmierung
+
+Durch Abonierung der Datenquelle bekommen wir automatisch mit, wenn eine Änderung der Daten statt findet.
+</script></section><section  data-markdown><script type="text/template">
+Dieses Prinzip ist in C# durch das Observer-Entwurfsmuster und Events implementiert.
+</script></section><section  data-markdown><script type="text/template">
+### Reactive Extensions
+
+Die Eventdaten werden zu einem Datenstrom, den wir mit "Extensions" manipulieren können.
+</script></section><section  data-markdown><script type="text/template">
+### Reactivity am Beispiel Excel
+
+
+<div class="mermaid">
+graph LR;
+	cel1[5] -. A1*5 .-> cel2[50]
+	cel2 -. B1 + 20 .-> cel3[70]
+
+</div>
+
+
+Ändert man den Wert in einer Zelle, dann ändert sich auch der Wert in der Summenzelle.
+</script></section><section  data-markdown><script type="text/template">
+Die Zelle (Unser Observable), deren Wert geändert wurde, löst ein Event aus, den die Summenzelle (Unser Observer) empfängt und dann den Wert neu berechnet.
+</script></section><section  data-markdown><script type="text/template">
+### Wikipedia-Definition
+
+"Bei der Datenverarbeitung ist Reaktive Programmierung ein Programmierparadigma, das sich an **Datenflüssen** orientiert."
+</script></section><section  data-markdown><script type="text/template">
+### Einfaches Beispiel
+
+```c#
+int a = 2;
+int b = 3;
+int c = a + b;
+Console.WriteLine($"before: the value of c is {c}");
+
+a = 7;
+b = 2;
+Console.WriteLine($"after: the value of c is {c}");
+```
+
+```shell
+before: the value of c is 5
+after: the value of c is 5
+```
+
+<div class="callout callout-color-default">
+<div class="callout-title">
+<div class="callout-icon">
+
+<i class="fas fa-pencil-alt" ></i>
+
+</div>
+<div class="callout-title-inner">
+
+Wir bemerken...
+
+</div>
+</div>
+<div class="callout-content">
+
+c reagiert **nicht** auf die Veränderung von a oder b!
+
+</div>
+</div>
+
+</script></section><section  data-markdown><script type="text/template">
+### Einfaches Beispiel
+
+```c#
+int a = 2;
+int b = 3;
+int c $= a + b;
+Console.WriteLine($"before: the value of c is {c}");
+
+a = 7;
+b = 2;
+Console.WriteLine($"after: the value of c is {c}");
+```
+
+```shell
+before: the value of c is 5
+after: the value of c is 9
+```
+
+<div class="callout callout-color2">
+<div class="callout-title">
+<div class="callout-icon">
+
+<i class="fas fa-fire-alt" ></i>
+
+</div>
+<div class="callout-title-inner">
+
+Mit eigenem Operator...
+
+</div>
+</div>
+<div class="callout-content">
+
+c **reagiert**  auf die Veränderung von a und b!
+
+</div>
+</div>
+</script></section><section  data-markdown><script type="text/template">
+### Reactive Extensions
+
+<p style="line-height: 0" class="reset-paragraph image-paragraph"><img src="Blank diagram.png" alt="" style="width: 700px"></img></p>
+
+</script></section><section  data-markdown><script type="text/template">
+### Simpler Doppeklick (Imperativ)
+<p style="line-height: 0" class="reset-paragraph image-paragraph"><img src="Pasted image 20220821185043.png" alt="" style="width: 700px"></img></p>
+
+</script></section><section  data-markdown><script type="text/template">
+### Das gleiche mit Rx.NET
+
+<p style="line-height: 0" class="reset-paragraph image-paragraph"><img src="Pasted image 20220821185107.png" alt="" style="width: 700px"></img></p>
+
+</script></section><section  data-markdown><script type="text/template">
+[ReactiveX](https://reactivex.io/)
+<p style="line-height: 0" class="reset-paragraph image-paragraph"><img src="Pasted image 20220821185704.png" alt="" ></img></p>
+
+</script></section><section  data-markdown><script type="text/template">
+## Rx Anatomie
+</script></section><section  data-markdown><script type="text/template">
+### Observables
+
+Ein **Observable** ist eine Collection von Werten über Zeit.
+</script></section><section  data-markdown><script type="text/template">
+Observable von Außen
+
+<p style="line-height: 0" class="reset-paragraph image-paragraph"><img src="Pasted image 20220821192242.png" alt="" style="width: 700px"></img></p>
+
+</script></section><section  data-markdown><script type="text/template">
+Observables von Innen
+
+<p style="line-height: 0" class="reset-paragraph image-paragraph"><img src="Pasted image 20220821192555.png" alt="" style="width: 700px"></img></p>
+
+</script></section><section  data-markdown><script type="text/template">
+Ein **Observer** ist der Konsument von Werten, die das **Observable** liefert.
+</script></section><section  data-markdown><script type="text/template">
+### IEnumerator vs IObserver
+
+#### Pull
+```c#
+public interface IEnumerator<out T> : IDisposable
+{
+          T Current { get; }
+          bool MoveNext();
+          void Reset();
+}
+```
+#### Push
+```c#
+public interface IObserver<in T>
+{
+    void OnCompleted();
+    void OnError(Exception error);
+    void OnNext(T value);
+}
+```
+</script></section><section  data-markdown><script type="text/template">
+### Oberserver Implementieren
+
+Zustände:
+
+- OnNext()
+	- Neue Daten hinzugekommen.
+- OnError()
+	- Es ist ein Fehler aufgetreten.
+- OnComplete()
+	- Alle Daten sind vorhanden. Abo wird beendet.
+</script></section><section  data-markdown><script type="text/template">
+<p style="line-height: 0" class="reset-paragraph image-paragraph"><img src="Pasted image 20220821193748.png" alt="" style="width: 700px"></img></p>
+
+</script></section><section  data-markdown><script type="text/template">
+### Observable stoppen
+
+- Aufruf von `subscription.Dispose()`
+- Durch einen Operator
+- Eine Exception wird ausgelöst
+- Auslösung von `OnComplete()`
+</script></section><section  data-markdown><script type="text/template">
+## Programmierung mit Rx.NET
+</script></section><section  data-markdown><script type="text/template">
+## Marble-Diagram
+
+<p style="line-height: 0" class="reset-paragraph image-paragraph"><img src="Pasted image 20220821212521.png" alt="" ></img></p>
+
+</script></section><section  data-markdown><script type="text/template">
+## Operators
+</script></section><section  data-markdown><script type="text/template">
+## Hot or Cold
+</script></section><section  data-markdown><script type="text/template">
+## Subjects
+
+</script></section><section  data-markdown><script type="text/template">
+## Additional Links
+
+[Datenstrom – Wikipedia](https://de.wikipedia.org/wiki/Datenstrom)
+</script></section></div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/zoom/zoom.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/math/math.js"></script>
+	<script src="plugin/mermaid/mermaid.js"></script>
+	<script src="plugin/chart/chart.min.js"></script>
+	<script src="plugin/chart/plugin.js"></script>
+	<script src="plugin/menu/menu.js"></script>
+	<script src="plugin/customcontrols/plugin.js"></script>
+	<script src="plugin/chalkboard/plugin.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+
+	if(isLight(bgColor)){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  RevealMenu,
+		  RevealChalkboard, 
+        ],
+
+		mathjax3: {
+			mathjax: 'plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		customcontrols: {
+			controls: [
+				{id: 'toggle-overview',
+				title: 'Toggle overview (O)',
+				icon: '<i class="fa fa-th"></i>',
+				action: 'Reveal.toggleOverview();'
+				},
+				{ icon: '<i class="fa fa-pen-square"></i>',
+				title: 'Toggle chalkboard (B)',
+				action: 'RevealChalkboard.toggleChalkboard();'
+				},
+				{ icon: '<i class="fa fa-pen"></i>',
+				title: 'Toggle notes canvas (C)',
+				action: 'RevealChalkboard.toggleNotesCanvas();'
+				},
+			]
+		},
+		menu: {
+			loadIcons: false
+		}
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":960,"height":700,"margin":0.04,"controls":true,"progress":true,"slideNumber":true,"transition":"slide","transitionSpeed":"default"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>
