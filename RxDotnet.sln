@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpClientObservableExample
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilmSuche", "FilmSuche\FilmSuche.csproj", "{4F3BD94B-64E4-4513-9C6B-1FF67AF7C04E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subjects", "Subjects\Subjects.csproj", "{483E3C3B-543A-4614-A4CF-566F523107BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{4F3BD94B-64E4-4513-9C6B-1FF67AF7C04E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F3BD94B-64E4-4513-9C6B-1FF67AF7C04E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F3BD94B-64E4-4513-9C6B-1FF67AF7C04E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{483E3C3B-543A-4614-A4CF-566F523107BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{483E3C3B-543A-4614-A4CF-566F523107BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{483E3C3B-543A-4614-A4CF-566F523107BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{483E3C3B-543A-4614-A4CF-566F523107BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

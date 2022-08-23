@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,9 +28,12 @@ namespace FilmSuche
     public MainWindow()
     {
       InitializeComponent();
-
       Observable.FromEventPattern(searchTextBox, "TextChanged")
         .Select(eventArgs => ((TextBox)eventArgs.Sender).Text)
+        //.Where(text => text.Length >= 2)
+        .Throttle(TimeSpan.FromMilliseconds(500))
+        .DistinctUntilChanged()
+        .ObserveOn(SynchronizationContext.Current)
         .Subscribe(text =>
         {
           //Debug.WriteLine(text);

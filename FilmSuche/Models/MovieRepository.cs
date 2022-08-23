@@ -11,16 +11,20 @@ namespace FilmSuche.Models
     private readonly IList<Movie> _movieList = new List<Movie>()
     {
       new Movie() { Title = "Star Wars: Episode III"},
+      new Movie() { Title = "Star Wars: Episode III"},
       new Movie() { Title = "Megamind"},
       new Movie() { Title = "Terminator"},
       new Movie() { Title = "John Wick"},
       new Movie() { Title = "Inception"},
+      new Movie() { Title = "Inception 2"},
       new Movie() { Title = "Die Schlange im Schatten des Adlers"}
     };
 
     public List<Movie> Find(string title)
     {
-      return _movieList.Where(x => x.Title == title).ToList();
+      return _movieList.Where(
+        x => x.Title.Contains(title, StringComparison.OrdinalIgnoreCase)
+          ).ToList();
     }
 
   }
