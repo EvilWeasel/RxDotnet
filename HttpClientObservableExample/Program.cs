@@ -2,7 +2,7 @@
 using HttpClientObservableExample.Models;
 using System.Diagnostics;
 using System.Reactive;
-
+using System.Reactive.Linq;
 
 var z = Observer.Create<Joke>(
   joke => Console.WriteLine(joke.value),
@@ -16,11 +16,13 @@ var z = Observer.Create<Joke>(
   GET: https://api.chucknorris.io/jokes/categories
 */
 
-var x = new HttpClientObservable<Joke>(
-  "https://api.chucknorris.io/jokes/random?category=fashion")
-  
-  .Subscribe(z);
+var x = new HttpClientObservable<string[]>("https://api.chucknorris.io/jokes/categories")
+  .SelectMany(categories => categories)
+  .SelectMany(category => new HttpClientObservable<Joke>($"https://api.chucknorris.io/jokes/random?category={category}"))
+  //.Merge()
+  .Subscribe(result => Console.WriteLine(result.value));
 
+//new HttpClientObservable<Joke>("https://api.chucknorris.io/jokes/random?category=fashion")
 
 // var y = new HttpClientObservable<Dog>(
 //   "https://dog.ceo/api/breeds/image/random")
@@ -30,7 +32,25 @@ var x = new HttpClientObservable<Joke>(
 //     () => Console.WriteLine("Dog Done!")    
 //   );
 
-x.Dispose();
+//x.Dispose();
 //y.Dispose();
 
 Console.ReadLine();
+
+public class ResponseObserver : IObserver<Joke>
+{
+  public void OnCompleted()
+  {
+    Console.WriteLine("Done");
+  }
+
+  public void OnError(Exception error)
+  {
+    throw new Exception("Error: No data recieved or wrong response-type");
+  }
+
+  public void OnNext(Joke joke)
+  {
+    Console.WriteLine(joke.value);
+  }
+}
