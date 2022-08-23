@@ -1,6 +1,9 @@
-﻿using System;
+﻿using FilmSuche.Models;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,9 +23,19 @@ namespace FilmSuche
   /// </summary>
   public partial class MainWindow : Window
   {
+    private readonly MovieRepository _movieRepository = new();
     public MainWindow()
     {
       InitializeComponent();
+
+      Observable.FromEventPattern(searchTextBox, "TextChanged")
+        .Select(eventArgs => ((TextBox)eventArgs.Sender).Text)
+        .Subscribe(text =>
+        {
+          //Debug.WriteLine(text);
+          var movies = _movieRepository.Find(text);
+          moviesListView.ItemsSource = movies;
+        });
     }
   }
 }
